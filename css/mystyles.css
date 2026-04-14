@@ -1,0 +1,63 @@
+/* GLOBAL */
+/* =========================
+   GLOBAL PAGE STYLES
+   ========================= */
+body {
+    background-color: #e8f0f7;              /* Custom background */
+    font-family: Arial, Helvetica, sans-serif; /* ✅ Font family */
+    color: #222;                             /* ✅ Font color */
+    margin: 0;
+}
+
+/* =========================
+   NAVIGATION BAR (DIV #1)
+   ========================= */
+
+/* NAV BAR */
+.nav {
+    background-color: #1e3a5f;
+    padding: 15px;
+    text-align: center;
+}
+
+.nav a {
+    color: white;
+    margin: 0 15px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family: Verdana, sans-serif;
+}
+
+/* CONTENT SECTIONS */
+.section {
+    background-color: white;
+    margin: 20px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* HEADINGS */
+h1 {
+    text-align: center;
+    color: #e67e22;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
+}
+
+h2 {
+    color: #2980b9;
+}
+
+/* IMAGE */
+.image {
+    width: 300px;
+    display: block;
+    margin: 10px auto;
+}
+
+/* FOOTER */
+.footer {
+    background-color: #1e3a5f;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
