@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Realistic Snake Protein Game</title>
+<style>
+  body {
+    margin: 0;
+    background: radial-gradient(circle at center, #1a1a1a, #000);
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+
+  canvas {
+    background: #1e1e1e;
+    border: 4px solid #00ff99;
+    border-radius: 10px;
+  }
+
+  #overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.85);
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  button {
+    padding: 12px 20px;
+    font-size: 18px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    border: none;
+    background: #00ff99;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+
+<h1>🐍 Snake Protein Challenge 🥤</h1>
+<canvas id="gameCanvas" width="500" height="500"></canvas>
+
+<div id="overlay">
+  <h2>Eat 50 Protein Shakes to Win</h2>
+  <button onclick="startGame()">Start Game</button>
+</div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const box = 20;
+
+let snake, direction, shake, score, game, playing = false;
+
+function startGame() {
+  snake = [
+    { x: 200, y: 200 },
+    { x: 180, y: 200 },
+    { x: 160, y: 200 }
+  ];
+  direction = "RIGHT";
+  score = 0;
+  spawnShake();
+  playing = true;
+  document.getElementById("overlay").style.display = "none";
+  clearInterval(game);
+  game = setInterval(draw, 90);
+}
+
+function spawnShake() {
+  shake = {
+    x: Math.floor(Math.random() * 25) * box,
+    y: Math.floor(Math.random() * 25) * box
+  };
+}
+
+document.addEventListener("keydown", (e) => {
+  if (!playing) return;
+  if (e.key === "ArrowLeft" && direction !== "RIGHT") direction = "LEFT";
+  if (e.key === "ArrowUp" && direction !== "DOWN") direction = "UP";
+  if (e.key === "ArrowRight" && direction !== "LEFT") direction = "RIGHT";
+  if (e.key === "ArrowDown" && direction !== "UP") direction = "DOWN";
+});
+
+function drawSnake() {
+  snake.forEach((segment, index) => {
+    // Body gradient
+    let gradient = ctx.createRadialGradient(
+      segment.x + 10, segment.y + 10, 2,
+      segment.x + 10, segment.y + 10, 10
+    );
+    gradient.addColorStop(0, index === 0 ? "#aaffaa" : "#00ff99");
+    gradient.addColorStop(1, "#006644");
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(segment.x + 10, segment.y + 10, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw eyes on head
+    if (index === 0) {
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(segment.x + 6, segment.y + 6, 2, 0, Math.PI * 2);
+      ctx.arc(segment.x + 14, segment.y + 6, 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  });
+}
+
+function drawShake() {
+  let x = shake.x;
+  let y = shake.y;
+
+  // Cup
+  ctx.fillStyle = "#ccccff";
+  ctx.beginPath();
+  ctx.moveTo(x + 4, y + 5);
+  ctx.lineTo(x + 16, y + 5);
+  ctx.lineTo(x + 14, y + 18);
+  ctx.lineTo(x + 6, y + 18);
+  ctx.closePath();
+  ctx.fill();
+
+  // Lid
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(x + 3, y + 2, 14, 4);
+
+  // Straw
+  ctx.fillStyle = "#ff4444";
+  ctx.fillRect(x + 11, y - 4, 3, 10);
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  drawSnake();
+  drawShake();
+
+  let head = { ...snake[0] };
+
+  if (direction === "LEFT") head.x -= box;
+  if (direction === "RIGHT") head.x += box;
+  if (direction === "UP") head.y -= box;
+  if (direction === "DOWN") head.y += box;
+
+  // Collision with walls
+  if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
+    return endGame(false);
+  }
+
+  // Collision with self
+  if (snake.some(p => p.x === head.x && p.y === head.y)) {
+    return endGame(false);
+  }
+
+  // Eating
+  if (head.x === shake.x && head.y === shake.y) {
+    score++;
+    spawnShake();
+    if (score >= 50) return endGame(true);
+  } else {
+    snake.pop();
+  }
+
+  snake.unshift(head);
+
+  // Score
+  ctx.fillStyle = "white";
+  ctx.font = "18px Arial";
+  ctx.fillText("Score: " + score, 10, 20);
+}
+
+function endGame(win) {
+  playing = false;
+  clearInterval(game);
+  const overlay = document.getElementById("overlay");
+  overlay.style.display = "block";
+  overlay.innerHTML = win
+    ? `<h2>🏆 YOU WIN 🏆! Score: ${score}</h2><button onclick="startGame()">Play Again</button>`
+    : `<h2>💀 GAME OVER 💀! Score: ${score}</h2><button onclick="startGame()">Try Again</button>`;
+}
+</script>
+
+</body>
+</html>
